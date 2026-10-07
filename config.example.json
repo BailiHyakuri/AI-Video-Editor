@@ -1,0 +1,9 @@
+{
+  "output_dir": "Output",
+  "temporary_dir": null,
+  "whisper_binary": null,
+  "model": null,
+  "language": "auto",
+  "log_level": "INFO",
+  "timeout": 3600
+}

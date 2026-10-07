@@ -23,3 +23,40 @@ build/
 
 .idea/
 .vscode/
+
+# Local tools, dependencies, models and private configuration
+.local/
+vendor/
+third_party_local/
+config.local.json
+*.bin
+*.gguf
+*.ggml
+*.safetensors
+*.dylib
+*.dll
+*.so
+*.exe
+
+# User media and generated transcripts/workspaces
+*.mov
+*.mp4
+*.MOV
+*.MP4
+*.wav
+*.mp3
+*.mkv
+*.avi
+output/
+transcript.json
+transcript.txt
+project_transcript.json
+project_transcript.txt
+*.jsonl
+.tmp/
+tmp/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+TestMedia/
