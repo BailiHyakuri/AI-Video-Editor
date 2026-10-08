@@ -60,3 +60,8 @@ tmp/
 htmlcov/
 *.egg-info/
 TestMedia/
+
+# Phase 2 private configuration and generated dry-run reports
+*.local.json
+edit_plan.json
+edit_plan.txt

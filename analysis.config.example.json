@@ -1,0 +1,14 @@
+{
+  "mode": "normal",
+  "llm_enabled": false,
+  "provider": "openai",
+  "model": null,
+  "timeout": 60,
+  "retries": 2,
+  "base_url": null,
+  "pause_thresholds": [0.35, 0.65, 1.2, 2.0],
+  "target_pause_duration": null,
+  "shorten_pause_min": null,
+  "batch_size": 20,
+  "context_chars": 600
+}

@@ -1,0 +1,5 @@
+{
+  "conservative": {"shorten_pause_min": 2.0, "target_pause_duration": 0.35, "delete_min_confidence": 0.95, "exact_repeat_min_chars": 12, "near_repeat_ratio": 0.9},
+  "normal": {"shorten_pause_min": 1.2, "target_pause_duration": 0.3, "delete_min_confidence": 0.9, "exact_repeat_min_chars": 8, "near_repeat_ratio": 0.85},
+  "aggressive": {"shorten_pause_min": 0.65, "target_pause_duration": 0.2, "delete_min_confidence": 0.85, "exact_repeat_min_chars": 6, "near_repeat_ratio": 0.8}
+}

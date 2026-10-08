@@ -1,0 +1,2 @@
+# Optional: no-AI mode uses only the Python standard library.
+openai>=2.0

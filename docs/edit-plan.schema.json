@@ -1,0 +1,405 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ai-video-editor:edit-plan:1.0",
+  "title": "Phase 2 dry-run edit plan 1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "source_transcript_schema_version": {
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
+    },
+    "source_transcript": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "path_base": {
+          "enum": [
+            "project",
+            "input_root"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "file",
+        "path_base",
+        "sha256"
+      ]
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "clip_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "name",
+        "clip_count",
+        "duration"
+      ]
+    },
+    "dry_run": {
+      "const": true
+    },
+    "analysis_mode": {
+      "enum": [
+        "deterministic",
+        "llm"
+      ]
+    },
+    "edit_preset": {
+      "enum": [
+        "conservative",
+        "normal",
+        "aggressive"
+      ]
+    },
+    "provider": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "model"
+          ]
+        }
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shorten_pause_min": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "target_pause_duration": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "delete_min_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exact_repeat_min_chars": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "near_repeat_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "pause_thresholds": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "shorten_pause_min",
+        "target_pause_duration",
+        "delete_min_confidence",
+        "exact_repeat_min_chars",
+        "near_repeat_ratio",
+        "pause_thresholds"
+      ]
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actions_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "delete_actions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "shorten_pause_actions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "keep_actions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_removed_duration": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "actions_total",
+        "delete_actions",
+        "shorten_pause_actions",
+        "keep_actions",
+        "estimated_removed_duration"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "source_transcript_schema_version",
+    "source_transcript",
+    "project",
+    "dry_run",
+    "analysis_mode",
+    "edit_preset",
+    "provider",
+    "policy",
+    "candidates",
+    "actions",
+    "summary"
+  ],
+  "$defs": {
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clip_id": {
+          "type": "string"
+        },
+        "source_start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_end": {
+          "type": "number",
+          "minimum": 0
+        },
+        "project_start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "project_end": {
+          "type": "number",
+          "minimum": 0
+        },
+        "timing_level": {
+          "enum": [
+            "segment",
+            "word",
+            "token",
+            "gap"
+          ]
+        }
+      },
+      "required": [
+        "clip_id",
+        "source_start",
+        "source_end",
+        "project_start",
+        "project_end",
+        "timing_level"
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "candidate_type": {
+          "enum": [
+            "pause",
+            "filler_speech",
+            "repeated_phrase",
+            "false_start",
+            "self_correction",
+            "abandoned_sentence",
+            "cross_clip_repetition",
+            "long_hesitation"
+          ]
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/range"
+          },
+          "minItems": 1
+        },
+        "original_text": {
+          "type": "string"
+        },
+        "context": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "object"
+        },
+        "allowed_actions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "KEEP",
+              "DELETE",
+              "SHORTEN_PAUSE"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "group_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "candidate_type",
+        "ranges",
+        "original_text",
+        "context",
+        "evidence",
+        "allowed_actions",
+        "group_id"
+      ]
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "type": "string"
+        },
+        "candidate_id": {
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "KEEP",
+            "DELETE",
+            "SHORTEN_PAUSE"
+          ]
+        },
+        "candidate_type": {
+          "enum": [
+            "pause",
+            "filler_speech",
+            "repeated_phrase",
+            "false_start",
+            "self_correction",
+            "abandoned_sentence",
+            "cross_clip_repetition",
+            "long_hesitation"
+          ]
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "type": "string"
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/range"
+          },
+          "minItems": 1
+        },
+        "original_text": {
+          "type": "string"
+        },
+        "original_duration": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "target_duration": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "decision_source": {
+          "enum": [
+            "deterministic",
+            "llm",
+            "hybrid"
+          ]
+        },
+        "suppressed_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "action_id",
+        "candidate_id",
+        "action",
+        "candidate_type",
+        "confidence",
+        "reason",
+        "ranges",
+        "original_text",
+        "original_duration",
+        "target_duration",
+        "decision_source",
+        "suppressed_by"
+      ]
+    }
+  }
+}
